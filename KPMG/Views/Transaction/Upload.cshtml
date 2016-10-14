@@ -1,0 +1,44 @@
+﻿@{
+    ViewBag.Title = "Upload data";
+}
+
+@model KPMG.Models.Upload
+
+<h2>@ViewBag.Title</h2>
+<h3>@ViewBag.Message</h3>
+
+@if (Model.ImportedLines == 0 && Model.IgnoredLines.Count == 0)
+{
+    using (Html.BeginForm("Upload", "Transaction", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <label for="file">Select a CSV file:</label>
+        <br />
+
+        <span>
+            @Html.TextBoxFor(m => m.FileData, new { type = "file" })
+            @Html.ValidationMessageFor(m => m.FileData, String.Empty, new { @class = "text-danger" })
+        </span>
+        <br />
+        <br />
+        <input type="submit" value="Upload file" />
+    }
+}
+else 
+{
+    <hr />
+    <h3>Import result for @Html.DisplayFor(model => model.FileData.FileName)</h3>
+    <h4 class="text-success">Succesfull imported lines: <strong>@Html.DisplayFor(model => model.ImportedLines)</strong></h4>
+    <br />
+    <h4 class="text-danger">Ignored lines due to:</h4>
+    foreach (var error in Model.IgnoredLines)
+    {
+        <dl>
+            <dt class="text-danger">@error.ErrorDescription   (@error.Lines.Count)</dt>
+            @foreach (var line in error.Lines)
+            {
+                <dd class="text-info">@line</dd>
+            }
+        </dl>        
+    }
+}
+
